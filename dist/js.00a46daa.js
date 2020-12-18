@@ -215,8 +215,7 @@ window.addEventListener('DOMContentLoaded', function () {
   setClock('.timer', deadline); //Modal
 
   var modalTriger = document.querySelectorAll('[data-modal]'),
-      modal = document.querySelector('.modal'),
-      modalCloseBtn = document.querySelector('.modal__close');
+      modal = document.querySelector('.modal');
 
   function closeModal() {
     modal.classList.add('hide');
@@ -235,9 +234,8 @@ window.addEventListener('DOMContentLoaded', function () {
   modalTriger.forEach(function (e) {
     e.addEventListener('click', openModal);
   });
-  modalCloseBtn.addEventListener('click', closeModal);
   modal.addEventListener('click', function (e) {
-    if (e.target === modal) {
+    if (e.target === modal || e.target.getAttribute('data-close') == "") {
       closeModal();
     }
   });
@@ -303,7 +301,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
   var forms = document.querySelectorAll('form'),
       status = {
-    load: "Загрузка",
+    load: "img/forms/spinner.png",
     error: "Что-то пошло не так",
     succes: "Мы скоро с Вами свяжемся"
   };
@@ -314,9 +312,10 @@ window.addEventListener('DOMContentLoaded', function () {
   function postForm(form) {
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var message = document.createElement('div');
-      message.innerHTML = "".concat(status.load);
-      form.append(message);
+      var statusMessage = document.createElement('img');
+      statusMessage.src = status.load;
+      statusMessage.style.cssText = "\n    display: block;\n    margin: 0 auto; \n    ";
+      form.insertAdjacentElement('afterend', statusMessage);
       var request = new XMLHttpRequest();
       request.open('POST', 'server.js');
       var formData = new FormData(form);
@@ -324,17 +323,34 @@ window.addEventListener('DOMContentLoaded', function () {
       request.addEventListener('load', function () {
         if (request.status === 200) {
           console.log(request.response);
-          message.innerHTML = "".concat(status.succes);
+          showShankDialog(status.succes);
+          form.reset();
+          statusMessage.remove();
         } else {
-          message.innerHTML = "".concat(status.error);
+          showShankDialog(status.error);
+          form.reset();
+          statusMessage.remove();
         }
-
-        form.reset();
-        setTimeout(function () {
-          message.remove();
-        }, 2000);
       });
     });
+  }
+
+  ; // Form message
+
+  function showShankDialog(massage) {
+    var modalDialogForm = document.querySelector('.modal__dialog');
+    modalDialogForm.classList.add('hide');
+    openModal();
+    var thanksForm = document.createElement('div');
+    thanksForm.classList.add('modal__dialog');
+    thanksForm.innerHTML = "\n  <div class = \"modal__content\">\n    <div class = \"modal__close\" data-close>\xD7</div>\n    <div class = \"modal__title\">  ".concat(massage, "</div>\n  </div>\n  ");
+    modal.append(thanksForm);
+    setTimeout(function () {
+      thanksForm.remove();
+      modalDialogForm.classList.remove('hide');
+      modalDialogForm.classList.add('show');
+      closeModal();
+    }, 4000);
   }
 });
 },{}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
@@ -365,7 +381,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64909" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60928" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
