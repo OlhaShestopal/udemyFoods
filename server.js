@@ -1,28 +1,21 @@
-const http = require("http");
+const express = require("express");
 const fs = require("fs");
+const bodyParser = require('body-parser');
 
 const PORT = process.env.PORT || 8080;
 const HOST = '127.0.0.1'
 
-function handleSubmit(req, res, reqUrl) {
-  req.setEncoding('UTF-8');
-  res.setHeader("Content-Type", "applcation/json");
+const app = express();
 
-  req.on("data", (chunk) => {
-    fs.appendFileSync("response.txt", chunk)
-    res.writeHead(200);
-    res.end();
-  })
-}
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-const server = http.createServer((req, res) => {
-  const router = {
-    "POST/send-form": handleSubmit,
-  };
+app.post('/send-form', (req, res) => {
 
-  let reqUrl = new URL(req.url, `http://${HOST}/`);
-  let redirectedFunc = router[req.method + reqUrl.pathname] || router.default;
-  redirectedFunc(req, res, reqUrl);
-});
+  const p = req.body;
+  console.log('--> Your payload:', JSON.stringify(p));
+  fs.appendFileSync("response.txt", JSON.stringify(p));
+  res.sendStatus(200);
+})
 
-server.listen(PORT, HOST, () => console.log(`Server is running at http://${HOST}:${PORT}`));
+app.listen(PORT, HOST, () => console.log(`Server is running at http://${HOST}:${PORT}`));

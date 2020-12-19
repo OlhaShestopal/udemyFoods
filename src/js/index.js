@@ -257,6 +257,7 @@ function postForm(form) {
 };
 
 // Form message
+
 function showShankDialog(massage) {
   const modalDialogForm = document.querySelector('.modal__dialog');
   modalDialogForm.classList.add('hide');
