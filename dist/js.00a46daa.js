@@ -319,12 +319,16 @@ window.addEventListener('DOMContentLoaded', function () {
       form.insertAdjacentElement('afterend', statusMessage); // form.append(statusMessage);
 
       var formData = new FormData(form);
+      var object = {};
+      formData.forEach(function (value, key) {
+        object[key] = value;
+      });
       fetch('http://localhost:8080/send-form', {
         method: "POST",
         headers: {
-          'Content-Type': 'form/multipart'
+          'Content-type': 'application/json'
         },
-        body: formData
+        body: JSON.stringify(object)
       }).then(function (data) {
         return data.text();
       }).then(function (data) {
@@ -358,7 +362,7 @@ window.addEventListener('DOMContentLoaded', function () {
     }, 4000);
   }
 });
-},{}],"../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{}],"../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -386,7 +390,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56304" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63901" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -562,5 +566,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","js/index.js"], null)
+},{}]},{},["../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","js/index.js"], null)
 //# sourceMappingURL=/js.00a46daa.js.map

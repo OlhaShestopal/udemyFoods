@@ -233,12 +233,18 @@ function postForm(form) {
 
     const formData = new FormData(form);
   
+    const object = {};
+    formData.forEach(function(value, key){
+      object[key] = value;
+    });
+
+    
     fetch('http://localhost:8080/send-form', {
       method: "POST",
       headers: {
-      'Content-Type': 'form/multipart'
+        'Content-type': 'application/json'
       },
-      body: formData,
+      body: JSON.stringify(object),
     })
     .then(data => data.text())
     .then(data => {
