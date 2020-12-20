@@ -225,34 +225,32 @@ function postForm(form) {
 
     const statusMessage = document.createElement('img');
     statusMessage.src = status.load;
-    statusMessage.style.cssText = `
-    display: block;
-    margin: 0 auto; 
-    `;
+    // statusMessage.style.display = 'block';
+    // statusMessage.style.margin = '0 auto';
+    
     form.insertAdjacentElement('afterend',statusMessage);
+    // form.append(statusMessage);
 
-
-    const request = new XMLHttpRequest;
-    request.open('POST', 'server.js'); 
-  
     const formData = new FormData(form);
   
-    request.send(formData);
-  
-    request.addEventListener('load',() => {
-      if (request.status === 200){
-        console.log(request.response)
+    fetch('http://localhost:8080/send-form', {
+      method: "POST",
+      headers: {
+      'Content-Type': 'form/multipart'
+      },
+      body: formData,
+    })
+    .then(data => data.text())
+    .then(data => {
+        console.log(data);
         showShankDialog(status.succes);
-        form.reset();
         statusMessage.remove();
-      } else{
+    }).catch(() => {
         showShankDialog(status.error);
-        form.reset();
         statusMessage.remove();
-      }
-
-      
-  });
+    }).finally(() =>{
+      form.reset();
+    })
   });
 };
 
