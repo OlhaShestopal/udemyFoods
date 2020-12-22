@@ -20,4 +20,10 @@ app.post('/send-form', (req, res) => {
   res.sendStatus(200);
 })
 
+app.get("/get-files", (req, res) => {
+  const file = fs.readFileSync("./src/db.json");
+  const result = JSON.parse(file);
+  res.send(result)
+})
+
 app.listen(PORT, HOST, () => console.log(`Server is running at http://${HOST}:${PORT}`));

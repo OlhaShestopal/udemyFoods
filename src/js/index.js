@@ -246,7 +246,7 @@ function postForm(form) {
       },
       body: JSON.stringify(object),
     })
-    .then(data => data.text())
+    .then(res=>res.text())
     .then(data => {
         console.log(data);
         showShankDialog(status.succes);
@@ -286,9 +286,11 @@ function showShankDialog(massage) {
     closeModal();
   }, 4000)
   
-}
+};
 
-
+fetch('http://localhost:8080/get-files')
+  .then(response => response.json())
+  .then(resalt => console.log(resalt));
 
 
 
