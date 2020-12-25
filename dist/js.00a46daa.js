@@ -118,6 +118,10 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   return newRequire;
 })({"js/index.js":[function(require,module,exports) {
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -295,9 +299,58 @@ window.addEventListener('DOMContentLoaded', function () {
     return MenuForms;
   }();
 
-  new MenuForms("img/tabs/vegy.jpg", "vegy", 'Меню "Фитнес"', 'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 229, '.menu .container').render();
-  new MenuForms("img/tabs/elite.jpg", "elite", 'Меню "Премиум"', 'В меню "Премиум" мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!', 550, '.menu .container').render();
-  new MenuForms("img/tabs/post.jpg", "post", 'Меню "Постное"', 'Меню "Постное" - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.', 430, '.menu .container').render(); // POST Forms
+  function getResource(_x) {
+    return _getResource.apply(this, arguments);
+  }
+
+  function _getResource() {
+    _getResource = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(url) {
+      var res;
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _context.next = 2;
+              return fetch(url);
+
+            case 2:
+              res = _context.sent;
+
+              if (res.ok) {
+                _context.next = 5;
+                break;
+              }
+
+              throw new Error("Could not fetch ".concat(url, ", status: ").concat(res.status));
+
+            case 5:
+              _context.next = 7;
+              return res.json();
+
+            case 7:
+              return _context.abrupt("return", _context.sent);
+
+            case 8:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }));
+    return _getResource.apply(this, arguments);
+  }
+
+  ;
+  getResource('http://localhost:8080/get-files').then(function (data) {
+    data.forEach(function (_ref) {
+      var img = _ref.img,
+          altimg = _ref.altimg,
+          title = _ref.title,
+          descr = _ref.descr,
+          price = _ref.price;
+      new MenuForms(img, altimg, title, descr, price, '.menu .container').render();
+    });
+  }); // POST Forms
 
   var forms = document.querySelectorAll('form'),
       status = {
@@ -306,10 +359,50 @@ window.addEventListener('DOMContentLoaded', function () {
     succes: "Мы скоро с Вами свяжемся"
   };
   forms.forEach(function (item) {
-    postForm(item);
+    bindPostData(item);
   });
 
-  function postForm(form) {
+  function postData(_x2, _x3) {
+    return _postData.apply(this, arguments);
+  }
+
+  function _postData() {
+    _postData = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(url, data) {
+      var res;
+      return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              _context2.next = 2;
+              return fetch(url, {
+                method: "POST",
+                headers: {
+                  'Content-type': 'application/json'
+                },
+                body: data
+              });
+
+            case 2:
+              res = _context2.sent;
+              _context2.next = 5;
+              return res.json();
+
+            case 5:
+              return _context2.abrupt("return", _context2.sent);
+
+            case 6:
+            case "end":
+              return _context2.stop();
+          }
+        }
+      }, _callee2);
+    }));
+    return _postData.apply(this, arguments);
+  }
+
+  ;
+
+  function bindPostData(form) {
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var statusMessage = document.createElement('img');
@@ -319,20 +412,9 @@ window.addEventListener('DOMContentLoaded', function () {
       form.insertAdjacentElement('afterend', statusMessage); // form.append(statusMessage);
 
       var formData = new FormData(form);
-      var object = {};
-      formData.forEach(function (value, key) {
-        object[key] = value;
-      });
-      fetch('http://localhost:8080/send-form', {
-        method: "POST",
-        headers: {
-          'Content-type': 'application/json'
-        },
-        body: JSON.stringify(object)
-      }).then(function (res) {
-        return res.text();
-      }).then(function (data) {
-        console.log(data);
+      var json = JSON.stringify(Object.fromEntries(formData.entries()));
+      postData('http://localhost:8080/send-form', json).then(function (res) {
+        console.log(res);
         showShankDialog(status.succes);
         statusMessage.remove();
       }).catch(function () {
@@ -397,7 +479,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62424" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64827" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

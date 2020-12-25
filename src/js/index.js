@@ -176,34 +176,21 @@ class MenuForms {
     this.parentSelector.append(divMenu)
   }
 }
+async function getResource (url){
+  const res = await fetch(url);
+    if (!res.ok){
+      throw new Error(`Could not fetch ${url}, status: ${res.status}`);
+    }
+    return await res.json();
+      
+    };
 
-new MenuForms (
-  "img/tabs/vegy.jpg",
-  "vegy",
-  'Меню "Фитнес"',
-  'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-  229,
-  '.menu .container',
-).render();
-
-new MenuForms (
-  "img/tabs/elite.jpg",
-  "elite",
-  'Меню "Премиум"',
-  'В меню "Премиум" мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-  550,
-  '.menu .container',
-).render();
-
-new MenuForms (
-  "img/tabs/post.jpg",
-  "post",
-  'Меню "Постное"',
-  'Меню "Постное" - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-  430,
-  '.menu .container',
-).render();
-
+    getResource('http://localhost:8080/get-files')
+    .then(data => {
+      data.forEach(({img, altimg, title, descr, price}) => {
+        new MenuForms(img, altimg, title, descr, price, '.menu .container' ).render();
+      });
+    });
 
 // POST Forms
 
@@ -215,10 +202,26 @@ const forms = document.querySelectorAll('form'),
       };
 
 forms.forEach(item => {
-  postForm(item);
+  bindPostData(item);
 });
 
-function postForm(form) {
+async function postData (url, data){
+  const res = await fetch(url,
+    {
+      method: "POST",
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: data,
+    }); 
+    return await res.json();
+      
+    };
+
+
+  
+
+function bindPostData(form) {
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -232,23 +235,11 @@ function postForm(form) {
     // form.append(statusMessage);
 
     const formData = new FormData(form);
-  
-    const object = {};
-    formData.forEach(function(value, key){
-      object[key] = value;
-    });
+    const json = JSON.stringify(Object.fromEntries(formData.entries())); 
 
-    
-    fetch('http://localhost:8080/send-form', {
-      method: "POST",
-      headers: {
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify(object),
-    })
-    .then(res=>res.text())
-    .then(data => {
-        console.log(data);
+    postData('http://localhost:8080/send-form', json)
+    .then(res => {
+        console.log(res);
         showShankDialog(status.succes);
         statusMessage.remove();
     }).catch(() => {
