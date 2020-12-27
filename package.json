@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
+  "browserslist": "since 2017-06",
+
   "scripts": {
     "start": "parcel src/index.html",
     "server": "node ./server.js"
@@ -24,4 +26,5 @@
     "cors": "^2.8.5",
     "express": "^4.17.1"
   }
+  
 }

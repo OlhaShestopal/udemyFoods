@@ -118,44 +118,34 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   return newRequire;
 })({"js/index.js":[function(require,module,exports) {
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-window.addEventListener('DOMContentLoaded', function () {
+window.addEventListener('DOMContentLoaded', () => {
   //Tabs
-  var tabs = document.querySelectorAll('.tabheader__item'),
-      tabsContent = document.querySelectorAll('.tabcontent'),
-      tabsParent = document.querySelector('.tabheader__items');
+  const tabs = document.querySelectorAll('.tabheader__item'),
+        tabsContent = document.querySelectorAll('.tabcontent'),
+        tabsParent = document.querySelector('.tabheader__items');
 
   function hideTabContent() {
-    tabsContent.forEach(function (item) {
+    tabsContent.forEach(item => {
       item.style.display = 'none';
     });
-    tabs.forEach(function (item) {
+    tabs.forEach(item => {
       item.classList.remove('tabheader__item_active');
     });
   }
 
   function showTabContent() {
-    var i = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+    let i = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
     tabsContent[i].style.display = 'block';
     tabs[i].classList.add('tabheader__item_active');
   }
 
   hideTabContent();
   showTabContent();
-  tabsParent.addEventListener('click', function (event) {
-    var target = event.target;
+  tabsParent.addEventListener('click', event => {
+    const target = event.target;
 
     if (target && target.classList.contains('tabheader__item')) {
-      tabs.forEach(function (item, i) {
+      tabs.forEach((item, i) => {
         if (target == item) {
           hideTabContent();
           showTabContent(i);
@@ -164,14 +154,14 @@ window.addEventListener('DOMContentLoaded', function () {
     }
   }); //Timer
 
-  var deadline = '2020-12-31';
+  const deadline = '2020-12-31';
 
   function getTimeRemaning(endtime) {
-    var t = Date.parse(endtime) - Date.parse(new Date()),
-        days = Math.floor(t / (1000 * 60 * 60 * 24)),
-        hours = Math.floor(t / (1000 * 60 * 60) % 24),
-        minutes = Math.floor(t / 1000 / 60 % 60),
-        seconds = Math.floor(t / 1000 % 60);
+    const t = Date.parse(endtime) - Date.parse(new Date()),
+          days = Math.floor(t / (1000 * 60 * 60 * 24)),
+          hours = Math.floor(t / (1000 * 60 * 60) % 24),
+          minutes = Math.floor(t / 1000 / 60 % 60),
+          seconds = Math.floor(t / 1000 % 60);
     return {
       'total': t,
       'days': days,
@@ -194,16 +184,16 @@ window.addEventListener('DOMContentLoaded', function () {
   ;
 
   function setClock(selectos, endtime) {
-    var timer = document.querySelector(selectos),
-        days = timer.querySelector('#days'),
-        hours = timer.querySelector('#hours'),
-        minutes = timer.querySelector('#minutes'),
-        seconds = timer.querySelector('#seconds'),
-        timeInterval = setInterval(updateClock, 1000);
+    const timer = document.querySelector(selectos),
+          days = timer.querySelector('#days'),
+          hours = timer.querySelector('#hours'),
+          minutes = timer.querySelector('#minutes'),
+          seconds = timer.querySelector('#seconds'),
+          timeInterval = setInterval(updateClock, 1000);
     updateClock();
 
     function updateClock() {
-      var t = getTimeRemaning(endtime);
+      const t = getTimeRemaning(endtime);
       days.innerHTML = getZero(t.days);
       hours.innerHTML = getZero(t.hours);
       minutes.innerHTML = getZero(t.minutes);
@@ -218,8 +208,11 @@ window.addEventListener('DOMContentLoaded', function () {
   ;
   setClock('.timer', deadline); //Modal
 
-  var modalTriger = document.querySelectorAll('[data-modal]'),
-      modal = document.querySelector('.modal');
+  const modalTriger = document.querySelectorAll('[data-modal]'),
+        modal = document.querySelector('.modal');
+  modalTriger.forEach(e => {
+    e.addEventListener('click', openModal);
+  });
 
   function closeModal() {
     modal.classList.add('hide');
@@ -235,20 +228,17 @@ window.addEventListener('DOMContentLoaded', function () {
   }
 
   ;
-  modalTriger.forEach(function (e) {
-    e.addEventListener('click', openModal);
-  });
-  modal.addEventListener('click', function (e) {
+  modal.addEventListener('click', e => {
     if (e.target === modal || e.target.getAttribute('data-close') == "") {
       closeModal();
     }
   });
-  document.addEventListener('keydown', function (e) {
-    if (e.code === 'Escape') {
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Escape' && modal.classList.contains('show')) {
       closeModal();
     }
   });
-  var modalTimeInterwal = setTimeout(openModal, 15000);
+  const modalTimeInterwal = setTimeout(openModal, 150000);
 
   function showModalByScroll() {
     if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
@@ -257,12 +247,21 @@ window.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  window.addEventListener('scroll', showModalByScroll); //Card by class
+  window.addEventListener('scroll', showModalByScroll); //Card 
 
-  var MenuForms = /*#__PURE__*/function () {
-    function MenuForms(src, alt, title, descr, price, parentSelector) {
-      _classCallCheck(this, MenuForms);
+  const getResource = async url => {
+    let res = await fetch(url);
 
+    if (!res.ok) {
+      throw new Error("Could not fetch ".concat(url, ", status: ").concat(res.status));
+    }
+
+    const data = await res.json();
+    return data;
+  };
+
+  class MenuCard {
+    constructor(src, alt, title, descr, price, parentSelector) {
       this.src = src;
       this.alt = alt;
       this.title = title;
@@ -274,153 +273,86 @@ window.addEventListener('DOMContentLoaded', function () {
       }
 
       this.classes = classes;
-      this.parentSelector = document.querySelector(parentSelector);
+      this.parent = document.querySelector(parentSelector);
+      this.transfer = 27;
+      this.changeToUAH();
     }
 
-    _createClass(MenuForms, [{
-      key: "render",
-      value: function render() {
-        var divMenu = document.createElement('div');
+    changeToUAH() {
+      this.price = this.price * this.transfer;
+    }
 
-        if (this.classes.length === 0) {
-          this.divMenu = 'menu__item';
-          divMenu.classList.add(this.divMenu);
-        } else {
-          this.classes.forEach(function (className) {
-            return divMenu.classList.add(className);
-          });
-        }
+    render() {
+      const element = document.createElement('div');
 
-        divMenu.innerHTML = "\n          <img src=".concat(this.src, " alt=").concat(this.alt, ">\n          <h3 class=\"menu__item-subtitle\">").concat(this.title, "</h3>\n          <div class=\"menu__item-descr\">").concat(this.descr, "</div>\n          <div class=\"menu__item-divider\"></div>\n          <div class=\"menu__item-price\">\n              <div class=\"menu__item-cost\">\u0426\u0435\u043D\u0430:</div>\n              <div class=\"menu__item-total\"><span>").concat(this.price, "</span> \u0433\u0440\u043D/\u0434\u0435\u043D\u044C</div>\n          </div>\n");
-        this.parentSelector.append(divMenu);
+      if (this.classes.length === 0) {
+        this.classes = "menu__item";
+        element.classList.add(this.classes);
+      } else {
+        this.classes.forEach(className => element.classList.add(className));
       }
-    }]);
 
-    return MenuForms;
-  }();
+      element.innerHTML = "\n            <img src=".concat(this.src, " alt=").concat(this.alt, ">\n            <h3 class=\"menu__item-subtitle\">").concat(this.title, "</h3>\n            <div class=\"menu__item-descr\">").concat(this.descr, "</div>\n            <div class=\"menu__item-divider\"></div>\n            <div class=\"menu__item-price\">\n                <div class=\"menu__item-cost\">\u0426\u0435\u043D\u0430:</div>\n                <div class=\"menu__item-total\"><span>").concat(this.price, "</span> \u0433\u0440\u043D/\u0434\u0435\u043D\u044C</div>\n            </div>\n        ");
+      this.parent.append(element);
+    }
 
-  function getResource(_x) {
-    return _getResource.apply(this, arguments);
   }
 
-  function _getResource() {
-    _getResource = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(url) {
-      var res;
-      return regeneratorRuntime.wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              _context.next = 2;
-              return fetch(url);
-
-            case 2:
-              res = _context.sent;
-
-              if (res.ok) {
-                _context.next = 5;
-                break;
-              }
-
-              throw new Error("Could not fetch ".concat(url, ", status: ").concat(res.status));
-
-            case 5:
-              _context.next = 7;
-              return res.json();
-
-            case 7:
-              return _context.abrupt("return", _context.sent);
-
-            case 8:
-            case "end":
-              return _context.stop();
-          }
-        }
-      }, _callee);
-    }));
-    return _getResource.apply(this, arguments);
-  }
-
-  ;
-  getResource('http://localhost:8080/get-files').then(function (data) {
-    data.forEach(function (_ref) {
-      var img = _ref.img,
-          altimg = _ref.altimg,
-          title = _ref.title,
-          descr = _ref.descr,
-          price = _ref.price;
-      new MenuForms(img, altimg, title, descr, price, '.menu .container').render();
+  getResource('http://localhost:8080/get-files').then(data => {
+    data.forEach((_ref) => {
+      let {
+        img,
+        altimg,
+        title,
+        descr,
+        price
+      } = _ref;
+      new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
     });
   }); // POST Forms
 
-  var forms = document.querySelectorAll('form'),
-      status = {
+  const forms = document.querySelectorAll('form'),
+        status = {
     load: "img/forms/spinner.png",
     error: "Что-то пошло не так",
     succes: "Мы скоро с Вами свяжемся"
   };
-  forms.forEach(function (item) {
+  forms.forEach(item => {
     bindPostData(item);
   });
 
-  function postData(_x2, _x3) {
-    return _postData.apply(this, arguments);
-  }
-
-  function _postData() {
-    _postData = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(url, data) {
-      var res;
-      return regeneratorRuntime.wrap(function _callee2$(_context2) {
-        while (1) {
-          switch (_context2.prev = _context2.next) {
-            case 0:
-              _context2.next = 2;
-              return fetch(url, {
-                method: "POST",
-                headers: {
-                  'Content-type': 'application/json'
-                },
-                body: data
-              });
-
-            case 2:
-              res = _context2.sent;
-              _context2.next = 5;
-              return res.json();
-
-            case 5:
-              return _context2.abrupt("return", _context2.sent);
-
-            case 6:
-            case "end":
-              return _context2.stop();
-          }
-        }
-      }, _callee2);
-    }));
-    return _postData.apply(this, arguments);
+  async function postData(url, data) {
+    let res = await fetch(url, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: data
+    });
+    const dataInfo = await res.json();
+    return dataInfo;
   }
 
   ;
 
   function bindPostData(form) {
-    form.addEventListener('submit', function (e) {
+    form.addEventListener('submit', e => {
       e.preventDefault();
-      var statusMessage = document.createElement('img');
-      statusMessage.src = status.load; // statusMessage.style.display = 'block';
-      // statusMessage.style.margin = '0 auto';
-
+      let statusMessage = document.createElement('img');
+      statusMessage.src = status.load;
+      statusMessage.style.cssText = "\n        display: block;\n        margin: 0 auto;\n    ";
       form.insertAdjacentElement('afterend', statusMessage); // form.append(statusMessage);
 
-      var formData = new FormData(form);
-      var json = JSON.stringify(Object.fromEntries(formData.entries()));
-      postData('http://localhost:8080/send-form', json).then(function (res) {
-        console.log(res);
+      const formData = new FormData(form);
+      const json = JSON.stringify(Object.fromEntries(formData.entries()));
+      postData('http://localhost:8080/send-form', json).then(dataInfo => {
+        console.log(dataInfo);
         showShankDialog(status.succes);
         statusMessage.remove();
-      }).catch(function () {
+      }).catch(() => {
         showShankDialog(status.error);
         statusMessage.remove();
-      }).finally(function () {
+      }).finally(() => {
         form.reset();
       });
     });
@@ -429,26 +361,70 @@ window.addEventListener('DOMContentLoaded', function () {
   ; // Form message
 
   function showShankDialog(massage) {
-    var modalDialogForm = document.querySelector('.modal__dialog');
+    const modalDialogForm = document.querySelector('.modal__dialog');
     modalDialogForm.classList.add('hide');
     openModal();
-    var thanksForm = document.createElement('div');
+    const thanksForm = document.createElement('div');
     thanksForm.classList.add('modal__dialog');
     thanksForm.innerHTML = "\n  <div class = \"modal__content\">\n    <div class = \"modal__close\" data-close>\xD7</div>\n    <div class = \"modal__title\">  ".concat(massage, "</div>\n  </div>\n  ");
-    modal.append(thanksForm);
-    setTimeout(function () {
+    document.querySelector('.modal').append(thanksForm);
+    setTimeout(() => {
       thanksForm.remove();
-      modalDialogForm.classList.remove('hide');
       modalDialogForm.classList.add('show');
+      modalDialogForm.classList.remove('hide');
       closeModal();
     }, 4000);
   }
 
-  ;
-  fetch('http://localhost:8080/get-files').then(function (response) {
-    return response.json();
-  }).then(function (resalt) {
-    return console.log(resalt);
+  ; // fetch('http://localhost:8080/get-files')
+  //   .then(response => response.json())
+  //   .then(resalt => console.log(resalt));
+  // Slider
+
+  const slides = document.querySelectorAll('.offer__slide'),
+        prev = document.querySelector('.offer__slider-prev'),
+        next = document.querySelector('.offer__slider-next'),
+        total = document.querySelector('#total'),
+        current = document.querySelector('#current');
+  let slideIndex = 1;
+
+  function showSlides(n) {
+    if (n > slides.length) {
+      slideIndex = 1;
+    }
+
+    if (n < 1) {
+      slideIndex = slides.length;
+    }
+
+    slides.forEach(item => item.classList.add('hide'));
+    slides[slideIndex - 1].classList.remove('hide');
+    slides[slideIndex - 1].classList.add('show');
+
+    if (slides.length < 10) {
+      current.textContent = "0".concat(slideIndex);
+    } else {
+      current.textContent = slideIndex;
+    }
+  }
+
+  function plussSlides(n) {
+    showSlides(slideIndex += n);
+  }
+
+  showSlides(slideIndex);
+
+  if (slides.length < 10) {
+    total.textContent = "0".concat(slides.length);
+  } else {
+    total.textContent = slides.length;
+  }
+
+  prev.addEventListener('click', () => {
+    plussSlides(-1);
+  });
+  next.addEventListener('click', () => {
+    plussSlides(1);
   });
 });
 },{}],"../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
@@ -479,7 +455,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64827" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64329" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

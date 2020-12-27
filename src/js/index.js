@@ -27,7 +27,6 @@ window.addEventListener('DOMContentLoaded', () =>{
 
     tabsParent.addEventListener('click', (event) => {
       const target = event.target;
-
       if (target && target.classList.contains('tabheader__item')){
         tabs.forEach((item, i) => {
           if (target == item){
@@ -96,6 +95,9 @@ window.addEventListener('DOMContentLoaded', () =>{
     const modalTriger = document.querySelectorAll('[data-modal]'),
         modal = document.querySelector('.modal');
         
+    modalTriger.forEach(e => {
+          e.addEventListener('click', openModal);
+        });
 
     function closeModal(){
       modal.classList.add('hide');
@@ -110,10 +112,6 @@ window.addEventListener('DOMContentLoaded', () =>{
       clearTimeout(modalTimeInterwal);
     };
 
-    modalTriger.forEach(e => {
-      e.addEventListener('click', openModal);
-    })
-
     modal.addEventListener('click', (e) => {
       if (e.target === modal || e.target.getAttribute('data-close') == ""){
         closeModal();
@@ -121,12 +119,12 @@ window.addEventListener('DOMContentLoaded', () =>{
     });
 
     document.addEventListener('keydown', (e) => {
-      if (e.code === 'Escape') {
+      if (e.code === 'Escape' && modal.classList.contains('show')) {
         closeModal();
       }
     });
 
-    const modalTimeInterwal = setTimeout(openModal, 15000);
+    const modalTimeInterwal = setTimeout(openModal, 150000);
 
     function showModalByScroll() {
       if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight){
@@ -139,58 +137,70 @@ window.addEventListener('DOMContentLoaded', () =>{
 
 
 
-//Card by class
+//Card 
 
-class MenuForms {
-  constructor (src, alt, title, descr, price, parentSelector, ...classes) {
-    this.src = src;
-    this.alt = alt;
-    this.title = title;
-    this.descr = descr;
-    this.price = price;
-    this.classes = classes;
-    this.parentSelector = document.querySelector(parentSelector);
 
-  }
-  render () {
-    const divMenu = document.createElement('div');
+    const getResource = async (url) => {
+      let res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`Could not fetch ${url}, status: ${res.status}`);
+      }
+      const data = await res.json();
+      return data;
+  
+    };
+    class MenuCard {
+      constructor(src, alt, title, descr, price, parentSelector, ...classes) {
+          this.src = src;
+          this.alt = alt;
+          this.title = title;
+          this.descr = descr;
+          this.price = price;
+          this.classes = classes;
+          this.parent = document.querySelector(parentSelector);
+          this.transfer = 27;
+          this.changeToUAH(); 
+      }
 
-    if (this.classes.length === 0){
-      this.divMenu = 'menu__item';
-      divMenu.classList.add(this.divMenu);
-    } else {
-      this.classes.forEach(className => divMenu.classList.add(className));
+      changeToUAH() {
+          this.price = this.price * this.transfer; 
+      }
+
+      render() {
+        const element = document.createElement('div');
+
+        if (this.classes.length === 0) {
+            this.classes = "menu__item";
+            element.classList.add(this.classes);
+        } else {
+            this.classes.forEach(className => element.classList.add(className));
+        }
+
+        element.innerHTML = `
+            <img src=${this.src} alt=${this.alt}>
+            <h3 class="menu__item-subtitle">${this.title}</h3>
+            <div class="menu__item-descr">${this.descr}</div>
+            <div class="menu__item-divider"></div>
+            <div class="menu__item-price">
+                <div class="menu__item-cost">Цена:</div>
+                <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
+            </div>
+        `;
+        this.parent.append(element);
     }
+}
+
 
     
-    divMenu.innerHTML = `
-          <img src=${this.src} alt=${this.alt}>
-          <h3 class="menu__item-subtitle">${this.title}</h3>
-          <div class="menu__item-descr">${this.descr}</div>
-          <div class="menu__item-divider"></div>
-          <div class="menu__item-price">
-              <div class="menu__item-cost">Цена:</div>
-              <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
-          </div>
-`;
-    this.parentSelector.append(divMenu)
-  }
-}
-async function getResource (url){
-  const res = await fetch(url);
-    if (!res.ok){
-      throw new Error(`Could not fetch ${url}, status: ${res.status}`);
-    }
-    return await res.json();
-      
-    };
-
     getResource('http://localhost:8080/get-files')
-    .then(data => {
+    .then(data =>  {
       data.forEach(({img, altimg, title, descr, price}) => {
-        new MenuForms(img, altimg, title, descr, price, '.menu .container' ).render();
-      });
-    });
+        new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
+      })
+      
+    }
+      );
+
 
 // POST Forms
 
@@ -205,51 +215,53 @@ forms.forEach(item => {
   bindPostData(item);
 });
 
-async function postData (url, data){
-  const res = await fetch(url,
+
+async function postData(url, data){
+  let res = await fetch(url,
     {
       method: "POST",
       headers: {
-        'Content-type': 'application/json'
+        'Content-Type': 'application/json'
       },
-      body: data,
-    }); 
-    return await res.json();
+      body: data
+    });
+    const dataInfo = await res.json();
+      return dataInfo;
       
     };
 
+    function bindPostData(form) {
 
-  
-
-function bindPostData(form) {
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const statusMessage = document.createElement('img');
-    statusMessage.src = status.load;
-    // statusMessage.style.display = 'block';
-    // statusMessage.style.margin = '0 auto';
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
     
-    form.insertAdjacentElement('afterend',statusMessage);
-    // form.append(statusMessage);
-
-    const formData = new FormData(form);
-    const json = JSON.stringify(Object.fromEntries(formData.entries())); 
-
-    postData('http://localhost:8080/send-form', json)
-    .then(res => {
-        console.log(res);
-        showShankDialog(status.succes);
-        statusMessage.remove();
-    }).catch(() => {
-        showShankDialog(status.error);
-        statusMessage.remove();
-    }).finally(() =>{
-      form.reset();
-    })
-  });
-};
+        let statusMessage = document.createElement('img');
+        statusMessage.src = status.load;
+        statusMessage.style.cssText = `
+        display: block;
+        margin: 0 auto;
+    `;
+        
+        form.insertAdjacentElement('afterend',statusMessage);
+        // form.append(statusMessage);
+    
+        const formData = new FormData(form);
+        const json = JSON.stringify(Object.fromEntries(formData.entries()));
+    
+        postData('http://localhost:8080/send-form', json)
+        .then(dataInfo => {
+            console.log(dataInfo);
+            showShankDialog(status.succes);
+            statusMessage.remove();
+        }).catch(() => {
+            showShankDialog(status.error);
+            statusMessage.remove();
+        }).finally(() =>{
+          form.reset();
+        })
+      });
+    };
+    
 
 // Form message
 
@@ -268,20 +280,73 @@ function showShankDialog(massage) {
   </div>
   `;
 
-  modal.append(thanksForm);
+  document.querySelector('.modal').append(thanksForm);
 
   setTimeout(() => {
     thanksForm.remove();
-    modalDialogForm.classList.remove('hide');
     modalDialogForm.classList.add('show');
+    modalDialogForm.classList.remove('hide');
     closeModal();
   }, 4000)
   
 };
 
-fetch('http://localhost:8080/get-files')
-  .then(response => response.json())
-  .then(resalt => console.log(resalt));
+// fetch('http://localhost:8080/get-files')
+//   .then(response => response.json())
+//   .then(resalt => console.log(resalt));
+
+
+// Slider
+
+const slides = document.querySelectorAll('.offer__slide'),
+        prev = document.querySelector('.offer__slider-prev'),
+        next = document.querySelector('.offer__slider-next'),
+        total = document.querySelector('#total'),
+        current = document.querySelector('#current');
+
+let slideIndex = 1;
+
+function showSlides (n) {
+
+    if (n > slides.length) {
+        slideIndex = 1;
+      } 
+    if (n < 1){
+      slideIndex = slides.length;
+    }
+    slides.forEach((item) => item.classList.add ('hide'));
+    slides[slideIndex - 1].classList.remove('hide');
+    slides[slideIndex - 1].classList.add ('show');
+    
+
+    if (slides.length < 10) {
+      current.textContent =  `0${slideIndex}`;
+  } else {
+      current.textContent =  slideIndex;
+  }
+}
+
+function plussSlides(n) {
+  showSlides(slideIndex +=n);
+
+}
+
+showSlides(slideIndex);
+
+if (slides.length < 10) {
+  total.textContent = `0${slides.length}`;
+} else {
+  total.textContent = slides.length;
+}
+
+
+prev.addEventListener('click', () =>{
+  plussSlides(-1);
+});
+
+next.addEventListener('click', () =>{
+  plussSlides(1);
+});
 
 
 
@@ -289,4 +354,3 @@ fetch('http://localhost:8080/get-files')
 
 
 });
-
