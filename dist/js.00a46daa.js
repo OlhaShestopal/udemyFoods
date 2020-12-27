@@ -385,47 +385,97 @@ window.addEventListener('DOMContentLoaded', () => {
         prev = document.querySelector('.offer__slider-prev'),
         next = document.querySelector('.offer__slider-next'),
         total = document.querySelector('#total'),
-        current = document.querySelector('#current');
+        current = document.querySelector('#current'),
+        slidesWrapper = document.querySelector('.offer__slider-wrapper'),
+        width = window.getComputedStyle(slidesWrapper).width,
+        slidesField = document.querySelector('.offer__slider-inner');
   let slideIndex = 1;
+  slidesField.style.width = 100 * slides.length + '%';
+  slidesField.style.display = 'flex';
+  slidesField.style.transition = '0.5s all';
+  slidesWrapper.style.overflow = 'hidden';
+  let offset = 0;
 
-  function showSlides(n) {
-    if (n > slides.length) {
+  if (slides.length < 10) {
+    total.textContent = "0".concat(slides.length);
+    current.textContent = "0".concat(slideIndex);
+  } else {
+    total.textContent = slides.length;
+    current.textContent = slideIndex;
+  }
+
+  next.addEventListener('click', () => {
+    if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)) {
+      offset = 0;
+    } else {
+      offset += +width.slice(0, width.length - 2);
+    }
+
+    slidesField.style.transform = "translateX(-".concat(offset, "px)");
+
+    if (slideIndex == slides.length) {
       slideIndex = 1;
+    } else {
+      slideIndex++;
     }
-
-    if (n < 1) {
-      slideIndex = slides.length;
-    }
-
-    slides.forEach(item => item.classList.add('hide'));
-    slides[slideIndex - 1].classList.remove('hide');
-    slides[slideIndex - 1].classList.add('show');
 
     if (slides.length < 10) {
       current.textContent = "0".concat(slideIndex);
     } else {
       current.textContent = slideIndex;
     }
-  }
-
-  function plussSlides(n) {
-    showSlides(slideIndex += n);
-  }
-
-  showSlides(slideIndex);
-
-  if (slides.length < 10) {
-    total.textContent = "0".concat(slides.length);
-  } else {
-    total.textContent = slides.length;
-  }
-
+  });
   prev.addEventListener('click', () => {
-    plussSlides(-1);
-  });
-  next.addEventListener('click', () => {
-    plussSlides(1);
-  });
+    if (offset == 0) {
+      offset = +width.slice(0, width.length - 2) * (slides.length - 1);
+    } else {
+      offset -= +width.slice(0, width.length - 2);
+    }
+
+    slidesField.style.transform = "translateX(-".concat(offset, "px)");
+
+    if (slideIndex == 1) {
+      slideIndex = slides.length;
+    } else {
+      slideIndex--;
+    }
+
+    if (slides.length < 10) {
+      current.textContent = "0".concat(slideIndex);
+    } else {
+      current.textContent = slideIndex;
+    }
+  }); // function showSlides (n) {
+  //     if (n > slides.length) {
+  //         slideIndex = 1;
+  //       } 
+  //     if (n < 1){
+  //       slideIndex = slides.length;
+  //     }
+  //     slides.forEach((item) => item.classList.add ('hide'));
+  //     slides[slideIndex - 1].classList.remove('hide');
+  //     slides[slideIndex - 1].classList.add ('show');
+  //     if (slides.length < 10) {
+  //       current.textContent =  `0${slideIndex}`;
+  //   } else {
+  //       current.textContent =  slideIndex;
+  //   }
+  // }
+  // function plussSlides(n) {
+  //   showSlides(slideIndex +=n);
+  // }
+  // showSlides(slideIndex);
+  // if (slides.length < 10) {
+  //   total.textContent = `0${slides.length}`;
+  // } else {
+  //   total.textContent = slides.length;
+  // }
+  // prev.addEventListener('click', () =>{
+  //   plussSlides(-1);
+  // });
+  // next.addEventListener('click', () =>{
+  //   plussSlides(1);
+  // });
 });
 },{}],"../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -455,7 +505,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64329" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57818" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
