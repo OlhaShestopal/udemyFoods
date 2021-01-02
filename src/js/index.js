@@ -446,6 +446,9 @@ dots.forEach(dot => {
     dots[slideIndex - 1].style.opacity = '1';
   })
 })
+
+
+
 // function showSlides (n) {
 
 //     if (n > slides.length) {
