@@ -382,6 +382,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // Slider
 
   const slides = document.querySelectorAll('.offer__slide'),
+        slider = document.querySelector('.offer__slider'),
         prev = document.querySelector('.offer__slider-prev'),
         next = document.querySelector('.offer__slider-next'),
         total = document.querySelector('#total'),
@@ -394,7 +395,29 @@ window.addEventListener('DOMContentLoaded', () => {
   slidesField.style.display = 'flex';
   slidesField.style.transition = '0.5s all';
   slidesWrapper.style.overflow = 'hidden';
+  slides.forEach(slide => {
+    slide.style.width = width;
+  });
+  slider.style.position = 'relative';
+  const indicators = document.createElement('ol'),
+        dots = [];
+  indicators.classList.add('carousel-indicators');
+  indicators.style.cssText = "\n    position: absolute;\n    right: 0;\n    bottom: 0;\n    left: 0;\n    z-index: 15;\n    display: flex;\n    justify-content: center;\n    margin-right: 15%;\n    margin-left: 15%;\n    list-style: none;\n";
+  slider.append(indicators);
   let offset = 0;
+
+  for (let i = 0; i < slides.length; i++) {
+    const dot = document.createElement('li');
+    dot.setAttribute('data-slide-to', i + 1);
+    dot.style.cssText = "\n      box-sizing: content-box;\n      flex: 0 1 auto;\n      width: 30px;\n      height: 6px;\n      margin-right: 3px;\n      margin-left: 3px;\n      cursor: pointer;\n      background-color: #fff;\n      background-clip: padding-box;\n      border-top: 10px solid transparent;\n      border-bottom: 10px solid transparent;\n      opacity: .5;\n      transition: opacity .6s ease;\n      ";
+
+    if (i == 0) {
+      dot.style.opacity = 1;
+    }
+
+    indicators.append(dot);
+    dots.push(dot);
+  }
 
   if (slides.length < 10) {
     total.textContent = "0".concat(slides.length);
@@ -424,6 +447,9 @@ window.addEventListener('DOMContentLoaded', () => {
     } else {
       current.textContent = slideIndex;
     }
+
+    dots.forEach(dot => dot.style.opacity = '.5');
+    dots[slideIndex - 1].style.opacity = '1';
   });
   prev.addEventListener('click', () => {
     if (offset == 0) {
@@ -445,6 +471,26 @@ window.addEventListener('DOMContentLoaded', () => {
     } else {
       current.textContent = slideIndex;
     }
+
+    dots.forEach(dot => dot.style.opacity = '.5');
+    dots[slideIndex - 1].style.opacity = '1';
+  });
+  dots.forEach(dot => {
+    dot.addEventListener('click', e => {
+      const slideTo = e.target.getAttribute('data-slide-to');
+      slideIndex = slideTo;
+      offset = +width.slice(0, width.length - 2) * (slideTo - 1);
+      slidesField.style.transform = "translateX(-".concat(offset, "px)");
+
+      if (slides.length < 10) {
+        current.textContent = "0".concat(slideIndex);
+      } else {
+        current.textContent = slideIndex;
+      }
+
+      dots.forEach(dot => dot.style.opacity = '.5');
+      dots[slideIndex - 1].style.opacity = '1';
+    });
   }); // function showSlides (n) {
   //     if (n > slides.length) {
   //         slideIndex = 1;
@@ -505,7 +551,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57818" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58615" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
