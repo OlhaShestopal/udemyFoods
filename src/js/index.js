@@ -449,6 +449,9 @@ dots.forEach(dot => {
 
 
 
+
+
+
 // function showSlides (n) {
 
 //     if (n > slides.length) {
