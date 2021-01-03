@@ -257,7 +257,9 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     const data = await res.json();
-    return data;
+    console.log(data);
+    let result = Object.values(data).map(v => Object.values(v));
+    return result;
   };
 
   class MenuCard {
@@ -299,6 +301,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   getResource('http://localhost:8080/get-files').then(data => {
+    console.log(data);
     data.forEach((_ref) => {
       let {
         img,
@@ -428,10 +431,10 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   next.addEventListener('click', () => {
-    if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)) {
+    if (offset == +width.replace(/\D/g, '') * (slides.length - 1)) {
       offset = 0;
     } else {
-      offset += +width.slice(0, width.length - 2);
+      offset += +width.replace(/\D/g, '');
     }
 
     slidesField.style.transform = "translateX(-".concat(offset, "px)");
@@ -453,9 +456,9 @@ window.addEventListener('DOMContentLoaded', () => {
   });
   prev.addEventListener('click', () => {
     if (offset == 0) {
-      offset = +width.slice(0, width.length - 2) * (slides.length - 1);
+      offset = +width.replace(/\D/g, '') * (slides.length - 1);
     } else {
-      offset -= +width.slice(0, width.length - 2);
+      offset -= +width.replace(/\D/g, '');
     }
 
     slidesField.style.transform = "translateX(-".concat(offset, "px)");
@@ -479,7 +482,7 @@ window.addEventListener('DOMContentLoaded', () => {
     dot.addEventListener('click', e => {
       const slideTo = e.target.getAttribute('data-slide-to');
       slideIndex = slideTo;
-      offset = +width.slice(0, width.length - 2) * (slideTo - 1);
+      offset = +width.replace(/\D/g, '') * (slideTo - 1);
       slidesField.style.transform = "translateX(-".concat(offset, "px)");
 
       if (slides.length < 10) {
@@ -522,6 +525,79 @@ window.addEventListener('DOMContentLoaded', () => {
   // next.addEventListener('click', () =>{
   //   plussSlides(1);
   // });
+  // Calculator
+
+  const result = document.querySelector('.calculating__result span');
+  let sex = 'female',
+      height,
+      weight,
+      age,
+      ratio = 1.375;
+
+  function calcTotal() {
+    if (!sex || !height || !weight || !age || !ratio) {
+      result.textContent = '____'; // Можете придумать что угодно
+
+      return;
+    }
+
+    if (sex === 'female') {
+      result.textContent = Math.round((447.6 + 9.2 * weight + 3.1 * height - 4.3 * age) * ratio);
+    } else {
+      result.textContent = Math.round((88.36 + 13.4 * weight + 4.8 * height - 5.7 * age) * ratio);
+    }
+  }
+
+  calcTotal();
+
+  function getStaticInfo(parentSelector, activeClass) {
+    const elements = document.querySelectorAll("".concat(parentSelector, " div"));
+    elements.forEach(elem => {
+      elem.addEventListener('click', e => {
+        if (e.target.getAttribute('data-ratio')) {
+          ratio = +e.target.getAttribute('data-ratio');
+        } else {
+          sex = e.target.getAttribute('id');
+        }
+
+        elements.forEach(elem => {
+          elem.classList.remove(activeClass);
+        });
+        e.target.classList.add(activeClass);
+        calcTotal();
+      });
+    });
+  }
+
+  ;
+  getStaticInfo('#gender', 'calculating__choose-item_active');
+  getStaticInfo('.calculating__choose_big', 'calculating__choose-item_active');
+
+  function getDynamicInfo(selector) {
+    const input = document.querySelector(selector);
+    input.addEventListener('input', () => {
+      switch (input.getAttribute('id')) {
+        case "height":
+          height = +input.value;
+          break;
+
+        case "weight":
+          weight = +input.value;
+          break;
+
+        case "age":
+          age = +input.value;
+          break;
+      }
+
+      calcTotal();
+    });
+  }
+
+  ;
+  getDynamicInfo('#height');
+  getDynamicInfo('#weight');
+  getDynamicInfo('#age');
 });
 },{}],"../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -551,7 +627,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58615" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53700" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
